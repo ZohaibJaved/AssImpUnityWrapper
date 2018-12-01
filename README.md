@@ -4,9 +4,9 @@ I was trying to find custom asset import on runtime. Currently in unity there is
 
 After that tried to find if someone has implemented this in unity. There are multiple people who tried implemented but could not find any thing which is complete. So decided to write my own wrapper to handle the AssImp .Net dlls in unity. 
 
-1.First step is to compile the latest AssImp .Net source code and get the required Dlls. Add This project already contains working dlls and they can be replaced with new ones too. 
+1. First step is to compile the latest AssImp .Net source code and get the required Dlls. Add This project already contains working dlls and they can be replaced with new ones too. 
 
-2.Next is use CrossTales File Browser by which we can get the path of the asset.
+2. Next is use CrossTales File Browser by which we can get the path of the asset.
 
 3. Then we have to intialize AssImp with the following settings 
 
