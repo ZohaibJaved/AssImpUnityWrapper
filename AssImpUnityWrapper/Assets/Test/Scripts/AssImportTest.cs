@@ -10,7 +10,8 @@ using UnityEngine.UI;
 public class AssImportTest : MonoBehaviour
 {
     public Text textRef;
-    public CustomAssetImporter customModelImporter;
+    private CustomAssetImporter customModelImporter;
+    public UnityEngine.Material matRef;
     
     public InputField scaleInput;
 
@@ -22,7 +23,8 @@ public class AssImportTest : MonoBehaviour
 
     // Use this for initialization
     void Start ()
-    {   
+    {
+        customModelImporter = new CustomAssetImporter();
         textRef.text = "AssImp : Initialized : " + Assimp.AssimpUnity.IsAssimpAvailable;
     }
 
@@ -42,7 +44,7 @@ public class AssImportTest : MonoBehaviour
 
         string path = FileBrowser.OpenSingleFile("Open File", string.Empty, extensions);
 
-        currentImportedModel = customModelImporter.LoadModel(path,normalsRecalculate.isOn,tangentsRecalculate.isOn);
+        currentImportedModel = customModelImporter.LoadModel(path,matRef,normalsRecalculate.isOn,tangentsRecalculate.isOn);
 
         if(currentImportedModel != null)
         {

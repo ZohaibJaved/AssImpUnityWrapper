@@ -6,10 +6,8 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-public class CustomAssetImporter : MonoBehaviour
+public class CustomAssetImporter
 {
-    public UnityEngine.Material matRef;
-
     Scene ImportModel(string modelPath)
     {
         if (File.Exists(modelPath))
@@ -38,7 +36,7 @@ public class CustomAssetImporter : MonoBehaviour
 
         return null;
     }
-    public GameObject LoadModel(string modelPath,bool shouldCalculateNormals,bool shouldCalculateTangents)
+    public GameObject LoadModel(string modelPath, UnityEngine.Material mat, bool shouldCalculateNormals,bool shouldCalculateTangents)
     {
         Scene assImpScene = ImportModel(modelPath);
 
@@ -100,21 +98,21 @@ public class CustomAssetImporter : MonoBehaviour
 
             Debug.Log("Meshes Imported in Unity : " + meshes.Count);
 
-            return ProcessNodes(assImpScene.RootNode,meshes);
+            return ProcessNodes(assImpScene.RootNode,meshes,mat);
         }
 
         return null;
 
     }
 
-    public GameObject ProcessNodes(Assimp.Node rootNode,List<UnityEngine.Mesh> meshesData)
+    public GameObject ProcessNodes(Assimp.Node rootNode,List<UnityEngine.Mesh> meshesData,UnityEngine.Material mat)
     {
         GameObject unityRoot = new GameObject(rootNode.Name);
         if (rootNode.HasChildren)
         {
             foreach (Assimp.Node childNode in rootNode.Children)
             {
-                GameObject unityChild = ProcessNodes(childNode,meshesData);
+                GameObject unityChild = ProcessNodes(childNode,meshesData,mat);
                 unityChild.transform.parent = unityRoot.transform;
             }
         }
@@ -146,11 +144,11 @@ public class CustomAssetImporter : MonoBehaviour
 
                     meshGO.transform.parent = unityRoot.transform;
 
-                    AddMeshGO(foundMesh, meshGO, unityRoot.name);
+                    AddMeshGO(foundMesh, meshGO, unityRoot.name,mat);
                 }
                 else
                 {
-                    AddMeshGO(foundMesh, unityRoot, unityRoot.name);
+                    AddMeshGO(foundMesh, unityRoot, unityRoot.name,mat);
                 }
             }
         }
@@ -186,10 +184,10 @@ public class CustomAssetImporter : MonoBehaviour
         return unityRoot;
     }
 
-    GameObject AddMeshGO(UnityEngine.Mesh mesh,GameObject meshGO,string goName)
+    GameObject AddMeshGO(UnityEngine.Mesh mesh,GameObject meshGO,string goName, UnityEngine.Material mat)
     {
         meshGO.AddComponent<MeshFilter>().mesh = mesh;
-        meshGO.AddComponent<MeshRenderer>().sharedMaterial = matRef;
+        meshGO.AddComponent<MeshRenderer>().sharedMaterial = mat;
 
         meshGO.name = goName;
 
