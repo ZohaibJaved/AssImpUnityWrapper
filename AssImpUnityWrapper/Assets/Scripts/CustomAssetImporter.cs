@@ -8,18 +8,25 @@ using UnityEngine;
 
 public class CustomAssetImporter
 {
+    Assimp.AssimpContext importer;
+    Assimp.PostProcessSteps postProcessSteps;
+
+    public CustomAssetImporter()
+    {
+        // Import Settings
+        importer = new Assimp.AssimpContext();
+        importer.SetConfig(new Assimp.Configs.MeshVertexLimitConfig(60000));
+        importer.SetConfig(new Assimp.Configs.MeshTriangleLimitConfig(60000));
+        importer.SetConfig(new Assimp.Configs.RemoveDegeneratePrimitivesConfig(true));
+        importer.SetConfig(new Assimp.Configs.SortByPrimitiveTypeConfig(Assimp.PrimitiveType.Line | Assimp.PrimitiveType.Point));
+
+        postProcessSteps = Assimp.PostProcessPreset.TargetRealTimeMaximumQuality | Assimp.PostProcessSteps.MakeLeftHanded | Assimp.PostProcessSteps.FlipWindingOrder;
+    }
+
     Scene ImportModel(string modelPath)
     {
         if (File.Exists(modelPath))
         {
-            Assimp.AssimpContext importer = new Assimp.AssimpContext();
-            importer.SetConfig(new Assimp.Configs.MeshVertexLimitConfig(60000));
-            importer.SetConfig(new Assimp.Configs.MeshTriangleLimitConfig(60000));
-            importer.SetConfig(new Assimp.Configs.RemoveDegeneratePrimitivesConfig(true));
-            importer.SetConfig(new Assimp.Configs.SortByPrimitiveTypeConfig(Assimp.PrimitiveType.Line | Assimp.PrimitiveType.Point));
-
-            Assimp.PostProcessSteps postProcessSteps = Assimp.PostProcessPreset.TargetRealTimeMaximumQuality | Assimp.PostProcessSteps.MakeLeftHanded | Assimp.PostProcessSteps.FlipWindingOrder;
-
             Scene scene = importer.ImportFile(modelPath, postProcessSteps);
 
             if (scene != null)
@@ -67,6 +74,9 @@ public class CustomAssetImporter
 
                 bool noNormalsData = mesh.normals == null || mesh.normals.Length == 0;
                 bool noTangensData = mesh.tangents == null || mesh.tangents.Length == 0;
+
+                // sometimes normals and tangents data is wrong .. to fix this we can recalculate them. 
+                // this can be toggled 
                 if ( noNormalsData || shouldCalculateNormals)
                 {
                     if(noNormalsData)
@@ -131,14 +141,14 @@ public class CustomAssetImporter
         List<CombineInstance> combinedInstances = new List<CombineInstance>();
 
         bool containsMultipleMeshes = rootNode.MeshIndices.Count > 1; 
-
+        
         foreach (var meshIndex in rootNode.MeshIndices)
         {
             var foundMesh = meshesData[meshIndex];
 
             if (foundMesh != null)
             {
-                if(containsMultipleMeshes)// If per GO contains multiple meshes then go through each mesh and generate GO.
+                if (containsMultipleMeshes)// If per GO contains multiple meshes then go through each mesh and generate GO.
                 {
                     GameObject meshGO = new GameObject();
 
@@ -186,6 +196,8 @@ public class CustomAssetImporter
 
     GameObject AddMeshGO(UnityEngine.Mesh mesh,GameObject meshGO,string goName, UnityEngine.Material mat)
     {
+        // Add mesh filter and renderer. 
+       
         meshGO.AddComponent<MeshFilter>().mesh = mesh;
         meshGO.AddComponent<MeshRenderer>().sharedMaterial = mat;
 
