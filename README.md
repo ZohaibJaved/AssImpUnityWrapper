@@ -26,3 +26,7 @@ After that tried to find if someone has implemented this in unity. There are mul
 7. We have to display the data in unity. This code is present in CustomAssetImporter.
 
 This project also uses Free file browser plugin created by CrossTales (https://assetstore.unity.com/packages/tools/gui/file-browser-windows-macos-98716)
+
+Platform:
+
+Tested both on Windows and Mac.
